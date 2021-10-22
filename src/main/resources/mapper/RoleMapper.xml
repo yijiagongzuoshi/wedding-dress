@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.weddingdress.mapper.RoleMapper">
+
+    <resultMap id="selectRoleListMap" type="cn.weddingdress.model.SysRole">
+        <id property="id" column="id"></id>
+        <result property="roleName" column="role_name"></result>
+        <result property="roleEnName" column="role_en_name"></result>
+        <result property="roleType" column="role_type"></result>
+        <result property="isDel" column="is_del"></result>
+        <collection property="sysRolePermissionList" ofType="cn.weddingdress.model.SysRolePermission">
+            <id property="id" column="srp_id"></id>
+            <result property="permissionId" column="permission_id"></result>
+            <result property="roleId" column="role_id"></result>
+            <result property="isDel" column="srp_is_del"></result>
+        </collection>
+    </resultMap>
+
+    <resultMap id="selectRoleListMap_A" type="cn.weddingdress.model.SysRole">
+        <id property="id" column="id"></id>
+        <result property="roleName" column="role_name"></result>
+        <result property="roleEnName" column="role_en_name"></result>
+        <result property="roleType" column="role_type"></result>
+        <result property="isDel" column="is_del"></result>
+        <collection property="sysRolePermissionList" ofType="cn.weddingdress.model.SysRolePermission">
+            <id property="id" column="srp_id"></id>
+            <result property="permissionId" column="permission_id"></result>
+            <result property="roleId" column="role_id"></result>
+            <result property="isDel" column="srp_is_del"></result>
+        </collection>
+        <collection property="sysPermissionList" ofType="cn.weddingdress.model.SysPermission">
+            <id property="id" column="sp_id"></id>
+            <id property="permissionCode" column="permission_code"></id>
+            <result property="permissionUrl" column="permission_url"></result>
+        </collection>
+    </resultMap>
+
+    <select id="selectPermissionCodeById" resultMap="selectRoleListMap_A" parameterType="java.lang.String">
+        SELECT
+            sr.*,srp.id as srp_id,srp.role_id as role_id,srp.permission_id as permission_id,srp.is_del as is_del,sp.id as sp_id,
+            sp.permission_url as permission_url, sp.permission_code as permission_code
+        FROM
+            sys_role sr
+        left join sys_role_permission srp on sr.id = srp.role_id and srp.is_del = 0
+        left join sys_permission sp on srp.permission_id = sp.id and sp.is_del = 0
+        WHERE
+            sr.id = #{id}
+        AND sr.is_del = 0
+    </select>
+
+    <select id="selectRoleIdByRoleType" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT
+            id
+        FROM
+            sys_role
+        WHERE
+            role_type = #{roleType}
+    </select>
+</mapper>
